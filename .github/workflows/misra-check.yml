@@ -15,6 +15,7 @@ jobs:
 
     steps:
       - name: Checkout Code
+        id: repo_checkout
         uses: actions/checkout@v4
 
       - name: Install Cppcheck
@@ -30,7 +31,7 @@ jobs:
           cppcheck --enable=all --dump --addon=misra.json --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
 
       - name: Convert report to SARIF format
-        if: always() && steps.checkout.outcome == 'success'
+        if: always() && steps.repo_checkout.outcome == 'success'
         uses: Flast/cppcheck-sarif@v2
         with:
           input: report.xml
