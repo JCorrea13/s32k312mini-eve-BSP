@@ -28,7 +28,7 @@ jobs:
         # --addon: Points to your misra.json file in the repository root
         # --xml: Formats findings into an XML file for conversion
         run: |
-          cppcheck --enable=all --dump --addon=misra.json --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
+          cppcheck -i s32k312mini_eve_BSP/Project_Settings --enable=all --dump --addon=misra.json --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
 
       - name: Convert report to SARIF format
         if: always() && steps.repo_checkout.outcome == 'success'
