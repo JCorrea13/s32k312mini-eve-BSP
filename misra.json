@@ -2,5 +2,6 @@
     "script": "misra.py",
     "args": [
         "--rule-texts=misra_rules.txt"
-    ]
+    ],
+    "version": "2004"
 }
