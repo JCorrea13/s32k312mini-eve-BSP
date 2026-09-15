@@ -3,22 +3,35 @@ This repository contains a board support package (BSP) for the s32k312mini-eve b
 
 ## Architecture
 
-+-------------------------------------------------------+
-|                      APPLICATION                      |
-|                                                       |
-+-------------------------------------------------------+
-                           |
-                           v
-+-------------------------------------------------------+
-|                         HAL                           |
-|                                                       |
-|    - GPIO Library                   - PIT_TIMER       |
-+-------------------------------------------------------+
-                           |
-                           v
-+-------------------------------------------------------+
-|                       S32K312.h                       |
-+-------------------------------------------------------+
+graph TD
+    %% Layer Styles
+    classDef l2 fill:#d4edda,stroke:#28a745,stroke-width:2px,color:#155724;
+    classDef l1 fill:#cce5ff,stroke:#004085,stroke-width:2px,color:#004085;
+    classDef l0 fill:#f8d7da,stroke:#721c24,stroke-width:2px,color:#721c24;
+
+    %% Architecture Flow
+    subgraph L2 [Layer 2: Application Layer]
+        App["C ANSI Main Program & Logic"]
+    end
+    
+    subgraph L1 [Layer 1: Peripheral Libraries]
+        GPIO["GPIO Library"]
+        PIT["PIT_TIMER Library"]
+    end
+    
+    subgraph L0 [Layer 0: Hardware Layer]
+        S32K["S32K312 Base Lib (MCAL / Registers)"]
+    end
+
+    App --> GPIO
+    App --> PIT
+    GPIO --> S32K
+    PIT --> S32K
+
+    class App l2;
+    class GPIO,PIT l1;
+    class S32K l0;
+
 
 
 
