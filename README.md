@@ -3,6 +3,7 @@ This repository contains a board support package (BSP) for the s32k312mini-eve b
 
 ## Architecture
 
+```mermaid
 graph TD
     %% Layer Styles
     classDef l2 fill:#d4edda,stroke:#28a745,stroke-width:2px,color:#155724;
@@ -31,7 +32,7 @@ graph TD
     class App l2;
     class GPIO,PIT l1;
     class S32K l0;
-
+```
 
 
 
