@@ -1,7 +1,7 @@
+#include "GPIO.h"
 #include "S32K312.h"
 #include "S32K312_UTILS.h"
 #include "core_cm7.h"
-#include "GPIO.h"
 
 static InputInterruptCallback PTB26InputCallbackFunction = NULL;
 
