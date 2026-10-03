@@ -1,12 +1,13 @@
-#include "Primitive_Parsers.h"
+#include "double_parser.h"
+#include "../parse_utils.h"
 
-static void agregateInteger(char value, double *parsedValue)
+static inline void agregateInteger(char value, double *parsedValue)
 {
 	char intValue = (int)value - 48;
 	*parsedValue = (*parsedValue * 10) + intValue;
 }
 
-static void agregateFraction(char value, double *parsedValue, double multiplier)
+static inline void agregateFraction(char value, double *parsedValue, double multiplier)
 {
 	char intValue = (int)value - 48;
 	*parsedValue = (*parsedValue) + (intValue * multiplier);
@@ -38,7 +39,7 @@ char parseDouble(char delimiter, getNextCharacter getNextChar, double *parsedVal
 		}
 
 		// Validate digits
-		if(!(next >= '0' && next <= '9'))
+		if(!isValidDigit(next))
 		{
 			*parsedValue = 0;
 			return 0;

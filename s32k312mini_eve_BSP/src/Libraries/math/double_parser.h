@@ -1,9 +1,9 @@
 /**
- * @file Primitive_Parsers.h
- * @brief This file exposes utility functions to parse from string of characters to primitive types.
+ * @file double_parser.h
+ * @brief This file exposes utility functions to parse from string of characters to double.
  */
-#if !defined(Primitive_Parsers_)
-#define Primitive_Parsers_
+#if !defined(double_parser_)
+#define double_parser_
 
 typedef char (getNextCharacter)(void);
 
