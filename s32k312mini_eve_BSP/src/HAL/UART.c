@@ -3,9 +3,10 @@
 #include "core_cm7.h"
 #include "S32K312_UTILS.h"
 
-static RXInterruptCallback rxCallback = NULL;
+static RXInterruptCallback rx1Callback = NULL;
+static RXInterruptCallback rx2Callback = NULL;
 
-void initUART(void)
+void initUART1(void)
 {
 	// Configure RXTX pins
 	IP_SIUL2->MSCR[16] = SIUL2_MSCR_SSS(5)| SIUL2_MSCR_OBE_MASK;
@@ -39,7 +40,7 @@ void initUART(void)
 	IP_LPUART_6->CTRL |= LPUART_CTRL_TE(1)+LPUART_CTRL_RE(1); // Enable RXTX
 }
 
-void uart_SendChar(char c)
+void uart1_SendChar(char c)
 {
 	// Wait until there is room in the RX FIFO to write another char
 	while(!(IP_LPUART_6->STAT & LPUART_STAT_TDRE_MASK));
@@ -47,15 +48,15 @@ void uart_SendChar(char c)
 	IP_LPUART_6->DATA = c;
 }
 
-void uart_SendString(const char *s)
+void uart1_SendString(const char *s)
 {
 	while(*s)
 	{
-		uart_SendChar(*s++);
+		uart1_SendChar(*s++);
 	}
 }
 
-char uart_GetChar()
+char uart1_GetChar()
 {
 	// Block until there is something to read
 	while(!(IP_LPUART_6->STAT & LPUART_STAT_RDRF_MASK));
@@ -66,16 +67,78 @@ char uart_GetChar()
 #define __INTERRUPT_LPUART6  __attribute__ ((interrupt ("LPUART6")))
 __INTERRUPT_LPUART6 void LPUART6_Handler(void)
 {
-	if(rxCallback != NULL)
+	if(rx1Callback != NULL)
 	{
-		rxCallback((char)IP_LPUART_6->DATA);
+		rx1Callback((char)IP_LPUART_6->DATA);
 	}
 }
 
-void setInterruptCallbackRXUART(RXInterruptCallback callback)
+void setInterruptCallbackRXUART1(RXInterruptCallback callback)
 {
-	rxCallback = callback;
+	rx1Callback = callback;
 	IP_LPUART_6->CTRL |= LPUART_CTRL_RIE(1);
 	NVIC_EnableIRQ(LPUART6_IRQn);
 }
 
+void initUART2(void)
+{
+	// Configure RXTX pins
+	IP_SIUL2->MSCR[3]= SIUL2_MSCR_SSS(6) + SIUL2_MSCR_IBE_MASK; // TX
+
+	IP_SIUL2->MSCR[2] = SIUL2_MSCR_SSS(3)| SIUL2_MSCR_OBE_MASK; // RX
+	IP_SIUL2->IMCR[699-512] = SIUL2_MSCR_SSS(1);
+
+	IP_LPUART_0->CTRL = 0; //Disable RXTX
+
+	/**
+	 * Configurar baudrate
+         Default: FIRC 48 MHZ, DIV=2
+         Clock UART =  24 MHz
+         Baud = 115200
+         SBR = 24MHz/(16*115200)=13.02
+	 */
+	// TODO: Make baud rate configurable
+	IP_LPUART_0->BAUD =LPUART_BAUD_OSR(15) | LPUART_BAUD_SBR(13);
+
+	IP_LPUART_0->CTRL |= LPUART_CTRL_TE(1)+LPUART_CTRL_RE(1); // Enable RXTX
+}
+
+void uart2_SendChar(char c)
+{
+	// Wait until there is room in the RX FIFO to write another char
+	while(!(IP_LPUART_0->STAT & LPUART_STAT_TDRE_MASK));
+
+	IP_LPUART_0->DATA = c;
+}
+
+void uart2_SendString(const char *s)
+{
+	while(*s)
+	{
+		uart1_SendChar(*s++);
+	}
+}
+
+char uart2_GetChar()
+{
+	// Block until there is something to read
+	while(!(IP_LPUART_0->STAT & LPUART_STAT_RDRF_MASK));
+
+	return (char)IP_LPUART_0->DATA;
+}
+
+#define __INTERRUPT_LPUART0  __attribute__ ((interrupt ("LPUART6")))
+__INTERRUPT_LPUART0 void LPUART0_Handler(void)
+{
+	if(rx2Callback != NULL)
+	{
+		rx2Callback((char)IP_LPUART_0->DATA);
+	}
+}
+
+void setInterruptCallbackRXUART2(RXInterruptCallback callback)
+{
+	rx2Callback = callback;
+	IP_LPUART_0->CTRL |= LPUART_CTRL_RIE(1);
+	NVIC_EnableIRQ(LPUART0_IRQn);
+}
