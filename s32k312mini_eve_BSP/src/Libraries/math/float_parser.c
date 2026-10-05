@@ -22,6 +22,11 @@ char parseFloat(char delimiter, getNextCharacter getNextChar, float *parsedValue
 	float fractionMultiplier = 0.1;
 	char isNegativeValue = 0;
 
+	if (next == delimiter) // Handle empty values
+	{
+		return 0;
+	}
+
 	if(next == '-') // Handle negative values
 	{
 		isNegativeValue = 1;
