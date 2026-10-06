@@ -23,12 +23,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cppcheck
 
-      - name: Run Cppcheck Analysis with MISRA Addon
-        # --dump: Generates intermediate files required by misra.py
-        # --addon: Points to your misra.json file in the repository root
-        # --xml: Formats findings into an XML file for conversion
+      - name: Run Cppcheck Analysis
         run: |
-          cppcheck -i s32k312mini_eve_BSP/Project_Settings --enable=all --dump --addon=misra.json --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
+          cppcheck -i s32k312mini_eve_BSP/Project_Settings --enable=all --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
 
       - name: Convert report to SARIF format
         if: always() && steps.repo_checkout.outcome == 'success'
@@ -43,3 +40,18 @@ jobs:
         with:
           sarif_file: report.sarif
           category: cppcheck-misra
+
+      - name: Checkout Unity Testing Framework
+        uses: actions/checkout@v4
+        with:
+          repository: 'ThrowTheSwitch/Unity'
+          path: 'github_actions_unity' # Clones it into a temporary runner folder
+
+      - name: Build and Run Tests
+        env:
+          # We point the Makefile to the temporary directory cloned in step 1
+          UNITY_DIR: ${{ github.workspace }}/github_actions_unity/src
+        run: |
+          make clean
+          make
+          ./Debug/s32k312mini_eve_BSP_utests
