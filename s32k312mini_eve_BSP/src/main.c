@@ -5,9 +5,8 @@
 
 #define BUFFER_SIZE 256
 
-volatile unsigned char buffer_raw_data[BUFFER_SIZE];
-volatile char_buffer_t buffer = { 0 };
-volatile GPS_Result gps_result = { 0 };
+unsigned char buffer_raw_data[BUFFER_SIZE];
+char_buffer_t buffer = { 0 };
 
 void gpsUARTCallback(char c)
 {
@@ -21,13 +20,13 @@ char readGPSBuffer(void)
 {
 	if(bufferIsEmpty(&buffer))
 	{
-		return NULL;
+		return '\0';
 	}
 
 	unsigned char c;
 	char result = bufferRead(&buffer, &c);
 
-	return result ? c : NULL;
+	return result ? c : '\0';
 }
 
 int main (void)
@@ -42,7 +41,7 @@ int main (void)
 
 	while(1)
 	{
-		gps_result = parseGPS(readGPSBuffer, GPRMC);
+		GPS_Result gps_result = parseGPS(readGPSBuffer, GPRMC);
 		uart1_SendString("GPS Status: ");
 		uart1_SendString(gps_result.success ? "OK" : "ERROR");
 	}
