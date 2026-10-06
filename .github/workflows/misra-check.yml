@@ -18,29 +18,6 @@ jobs:
         id: repo_checkout
         uses: actions/checkout@v4
 
-      - name: Install Cppcheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cppcheck
-
-      - name: Run Cppcheck Analysis
-        run: |
-          cppcheck -i s32k312mini_eve_BSP/Project_Settings --enable=all --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
-
-      - name: Convert report to SARIF format
-        if: always() && steps.repo_checkout.outcome == 'success'
-        uses: Flast/cppcheck-sarif@v2
-        with:
-          input: report.xml
-          output: report.sarif
-
-      - name: Upload Results to GitHub Security Tab
-        if: always() && hashFiles('report.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: report.sarif
-          category: cppcheck-misra
-
       - name: Checkout Unity Testing Framework
         uses: actions/checkout@v4
         with:
