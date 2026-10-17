@@ -1,4 +1,4 @@
-name: MISRA Check
+name: Unit Tests
 
 on:
   push:
