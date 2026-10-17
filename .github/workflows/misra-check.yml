@@ -25,9 +25,11 @@ jobs:
           path: 'github_actions_unity' # Clones it into a temporary runner folder
 
       - name: Build and Run Tests
+        working-directory: s32k312mini_eve_BSP_utests
         env:
-          # We point the Makefile to the temporary directory cloned in step 1
+          # Point the Makefile to the Unity checkout cloned above.
           UNITY_DIR: ${{ github.workspace }}/github_actions_unity/src
+          BSP_SRC_DIR: ${{ github.workspace }}/s32k312mini_eve_BSP/src/Libraries
         run: |
           make clean
           make
