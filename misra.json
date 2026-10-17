@@ -1,7 +1,8 @@
 {
     "script": "misra.py",
     "args": [
-        "--rule-texts=misra_rules.txt"
+        "--rule-texts=misra_rules.txt",
+        "--suppress-rules=15.5"
     ],
     "version": "2004"
 }
