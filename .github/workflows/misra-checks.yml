@@ -24,11 +24,21 @@ jobs:
           sudo apt-get install -y cppcheck
 
       - name: Run Cppcheck Analysis with MISRA Addon
-        # --dump: Generates intermediate files required by misra.py
-        # --addon: Points to your misra.json file in the repository root
-        # --xml: Formats findings into an XML file for conversion
+        # Analyze only C translation units under src. The include paths let
+        # Cppcheck resolve project and CMSIS headers without checking them as
+        # independent MISRA targets.
         run: |
-          cppcheck -i s32k312mini_eve_BSP/Project_Settings --enable=all --dump --addon=misra.json --xml-version=2 --xml --error-exitcode=1 --output-file=report.xml .
+          cppcheck \
+            -I s32k312mini_eve_BSP/include \
+            -I s32k312mini_eve_BSP/src \
+            --enable=all \
+            --dump \
+            --addon=misra.json \
+            --xml-version=2 \
+            --xml \
+            --error-exitcode=1 \
+            --output-file=report.xml \
+            $(find s32k312mini_eve_BSP/src -type f -name '*.c' -print)
 
       - name: Convert report to SARIF format
         if: always() && steps.repo_checkout.outcome == 'success'
