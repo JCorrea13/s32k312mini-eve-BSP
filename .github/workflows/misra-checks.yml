@@ -47,10 +47,19 @@ jobs:
           input: report.xml
           output: report.sarif
 
-      - name: Normalize SARIF line numbers
+      - name: Normalize SARIF line numbers and remove include files
         if: always() && hashFiles('report.sarif') != ''
         run: |
-          jq 'walk(if type == "object" and (.startLine? | type == "number") and .startLine < 1 then .startLine = 1 else . end)' report.sarif > report.sarif.tmp
+          jq '
+            walk(if type == "object" and (.startLine? | type == "number") and .startLine < 1 then .startLine = 1 else . end)
+            | .runs |= map(
+                .results |= map(select(
+                  ([.locations[]?.physicalLocation.artifactLocation.uri // ""]
+                    | any(test("(^|/)include/"; "i")))
+                  | not
+                ))
+              )
+          ' report.sarif > report.sarif.tmp
           mv report.sarif.tmp report.sarif
 
       - name: Upload Results to GitHub Security Tab
